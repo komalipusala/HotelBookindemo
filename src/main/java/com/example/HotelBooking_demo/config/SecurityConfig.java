@@ -9,13 +9,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http
+            .csrf(csrf -> csrf.disable())  // Disable CSRF (for testing purposes)
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().authenticated())
-            .httpBasic();
+                .anyRequest().permitAll()  // Allow all requests without authentication
+            )
+            .formLogin(form -> form.disable())  // Disable default login form
+            .httpBasic(httpBasic -> httpBasic.disable());  // Disable Basic Auth
+
         return http.build();
     }
 }
