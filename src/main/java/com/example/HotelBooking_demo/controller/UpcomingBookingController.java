@@ -1,30 +1,35 @@
 package com.example.HotelBooking_demo.controller;
-
 import com.example.HotelBooking_demo.model.UpcomingBooking;
 import com.example.HotelBooking_demo.services.UpcomingBookingService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
 @RestController
 @RequestMapping("/upcoming-bookings")
 public class UpcomingBookingController {
-
-    private final UpcomingBookingService upcomingBookingService;
-
-    public UpcomingBookingController() {
-        this.upcomingBookingService = new UpcomingBookingService();
+    @Autowired
+    private UpcomingBookingService upcomingBookingService;
+    // :white_check_mark: Add a new upcoming booking
+    @PostMapping
+    public ResponseEntity<UpcomingBooking> addBooking(@RequestBody UpcomingBooking booking) {
+        UpcomingBooking savedBooking = upcomingBookingService.addBooking(booking);
+        return ResponseEntity.ok(savedBooking);
     }
-
-    @PostMapping("/add")
-    public ResponseEntity<String> addBooking(@RequestBody UpcomingBooking booking) {
-        upcomingBookingService.addBooking(booking);
-        return ResponseEntity.ok("Upcoming booking added successfully");
+    // :white_check_mark: Get all upcoming bookings
+    @GetMapping
+    public ResponseEntity<List<UpcomingBooking>> getAllBookings() {
+        return ResponseEntity.ok(upcomingBookingService.getAllUpcomingBookings());
     }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<UpcomingBooking>> getUpcomingBookings() {
-        return ResponseEntity.ok(upcomingBookingService.getUpcomingBookings());
+    // :white_check_mark: Get only future bookings
+    @GetMapping("/future")
+    public ResponseEntity<List<UpcomingBooking>> getFutureBookings() {
+        return ResponseEntity.ok(upcomingBookingService.getFutureBookings());
     }
 }
+
+
+
+
+
 

@@ -1,20 +1,45 @@
 package com.example.HotelBooking_demo.services;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.example.HotelBooking_demo.model.BookingHistory;
+import com.example.HotelBooking_demo.model.Customer;
+import com.example.HotelBooking_demo.model.Room;
+import com.example.HotelBooking_demo.repo.BookingHistoryRepository;
+import com.example.HotelBooking_demo.repo.CustomerRepo;
+import com.example.HotelBooking_demo.repo.RoomRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+
+@Service
 public class BookingHistoryService {
-    private List<String> bookingHistory;
-    public BookingHistoryService() {
-        this.bookingHistory = new ArrayList<>();
-    }
-    public void addBooking(String booking) {
-        bookingHistory.add(booking);
-    }
-    public List<String> getBookingHistory() {
-        return new ArrayList<>(bookingHistory);
-    }
-    public void clearHistory() {
-        bookingHistory.clear();
+
+    @Autowired
+    private BookingHistoryRepository bookingHistoryRepository;
+
+    @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
+    private CustomerRepo customerRepository;
+
+    public BookingHistory createBooking(Long customerId, Long roomId, LocalDate startDate, LocalDate endDate) {
+        // Fetch existing customer
+        Customer existingCustomer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        // Fetch existing room
+        Room existingRoom = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+
+        // Create new BookingHistory
+        BookingHistory bookingHistory = new BookingHistory();
+        bookingHistory.setCustomer(existingCustomer);
+        bookingHistory.setRoom(existingRoom);
+        bookingHistory.setStartDate(startDate);
+        bookingHistory.setEndDate(endDate);
+
+        // Save BookingHistory
+        return bookingHistoryRepository.save(bookingHistory);
     }
 }
-
