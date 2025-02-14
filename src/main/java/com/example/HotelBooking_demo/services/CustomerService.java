@@ -1,35 +1,41 @@
 package com.example.HotelBooking_demo.services;
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
 import com.example.HotelBooking_demo.model.Customer;
+import com.example.HotelBooking_demo.repo.CustomerRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
 @Service
 public class CustomerService {
-    private List<Customer> customers = new ArrayList<>();
+    @Autowired
+    private CustomerRepo customerRepository;
+    // :white_check_mark: Fetch all customers from database
     public List<Customer> getAllCustomers() {
-        return customers;
+        return customerRepository.findAll();
     }
+    // :white_check_mark: Save customer to database
     public Customer addCustomer(Customer customer) {
-        customers.add(customer);
-        return customer;
+        return customerRepository.save(customer);
     }
-    public Customer getCustomerById(int id) {
-        return customers.stream()
-                .filter(customer -> customer.getId() == id)
-                .findFirst()
-                .orElse(null);
+    // :white_check_mark: Get customer by ID from database
+    public Customer getCustomerById(Long id) {
+        Optional<Customer> customer = customerRepository.findById(id);
+        return customer.orElse(null); // Returns customer if found, otherwise null
     }
-    public Customer updateCustomer(int id, Customer updatedCustomer) {
-        for (int i = 0; i < customers.size(); i++) {
-            Customer customer = customers.get(i);
-            if (customer.getId() == id) {
-                customers.set(i, updatedCustomer);
-                return updatedCustomer;
-            }
+    // :white_check_mark: Update existing customer
+    public Customer updateCustomer(Long id, Customer updatedCustomer) {
+        if (customerRepository.existsById(id)) {
+            updatedCustomer.setId(id); // Ensure ID remains the same
+            return customerRepository.save(updatedCustomer);
         }
-        return null;
+        return null; // Customer not found
     }
-    public boolean deleteCustomer(int id) {
-        return customers.removeIf(customer -> customer.getId() == id);
+    // :white_check_mark: Delete customer by ID
+    public boolean deleteCustomer(Long id) {
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
+            return true;
+        }
+        return false; // Customer not found
     }
 }
