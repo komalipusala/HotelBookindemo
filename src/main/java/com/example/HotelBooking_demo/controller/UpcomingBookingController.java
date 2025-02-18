@@ -1,30 +1,41 @@
 package com.example.HotelBooking_demo.controller;
-import com.example.HotelBooking_demo.model.UpcomingBooking;
+import com.example.HotelBooking_demo.upcomingbookingDTO.UpcomingBookingRequestDTO;
+import com.example.HotelBooking_demo.upcomingbookingDTO.UpcomingBookingResponseDTO;
 import com.example.HotelBooking_demo.services.UpcomingBookingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RestController
+
 @RequestMapping("/upcoming-bookings")
 public class UpcomingBookingController {
-    @Autowired
-    private UpcomingBookingService upcomingBookingService;
-    // :white_check_mark: Add a new upcoming booking
+    private final UpcomingBookingService upcomingBookingService;
+    public UpcomingBookingController(UpcomingBookingService upcomingBookingService) {
+        this.upcomingBookingService = upcomingBookingService;
+    }
+    // Create a new booking
     @PostMapping
-    public ResponseEntity<UpcomingBooking> addBooking(@RequestBody UpcomingBooking booking) {
-        UpcomingBooking savedBooking = upcomingBookingService.addBooking(booking);
-        return ResponseEntity.ok(savedBooking);
+    public ResponseEntity<UpcomingBookingResponseDTO> createBooking(@RequestBody UpcomingBookingRequestDTO requestDTO) {
+        UpcomingBookingResponseDTO responseDTO = upcomingBookingService.createBooking(requestDTO);
+        return ResponseEntity.ok(responseDTO);
     }
-    // :white_check_mark: Get all upcoming bookings
+    // Get all bookings
     @GetMapping
-    public ResponseEntity<List<UpcomingBooking>> getAllBookings() {
-        return ResponseEntity.ok(upcomingBookingService.getAllUpcomingBookings());
+    public ResponseEntity<List<UpcomingBookingResponseDTO>> getAllBookings() {
+        List<UpcomingBookingResponseDTO> bookings = upcomingBookingService.getAllBookings();
+        return ResponseEntity.ok(bookings);
     }
-    // :white_check_mark: Get only future bookings
-    @GetMapping("/future")
-    public ResponseEntity<List<UpcomingBooking>> getFutureBookings() {
-        return ResponseEntity.ok(upcomingBookingService.getFutureBookings());
+    // Get a booking by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<UpcomingBookingResponseDTO> getBookingById(@PathVariable Long id) {
+        UpcomingBookingResponseDTO responseDTO = upcomingBookingService.getBookingById(id);
+        return ResponseEntity.ok(responseDTO);
+    }
+    // Delete a booking by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {
+        upcomingBookingService.deleteBooking(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

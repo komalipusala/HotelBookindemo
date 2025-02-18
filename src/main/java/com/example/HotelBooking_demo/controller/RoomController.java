@@ -20,7 +20,7 @@ public class RoomController {
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long id) {
         Room room = roomService.getRoomById(id);
-        return (room != null) ? ResponseEntity.ok(room) : ResponseEntity.notFound().build();
+        return (room !=null) ? ResponseEntity.ok(room) : ResponseEntity.notFound().build();
     }
     // :white_check_mark: Create a new room
     @PostMapping
